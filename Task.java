@@ -148,9 +148,7 @@ public class Task implements Comparable<Task>{
 
     public void writeToFile(PrintWriter pw){
         pw.println(type);
-        pw.println("BEGIN_TITLE");
         pw.println(title);
-        pw.println("END_TITLE");
         if(type == null) return;
         if(type){
             //Date-Based Case
@@ -163,13 +161,7 @@ public class Task implements Comparable<Task>{
 
     static Task readFromFile(Scanner scan){
         String readType = scan.nextLine();
-        scan.nextLine(); //BEGIN_TITLE
-        String readTitle = "";
-        while(true){
-            String newLine = scan.nextLine();
-            if(newLine.equals("END_TITLE")) break;
-            readTitle += newLine;
-        }
+        String readTitle = scan.nextLine();
         Task newTask = new Task(readTitle);
         if(readType.equals("null")) return newTask;
         if(readType.equals("true")){

@@ -7,7 +7,7 @@ del *.class
 if exist outBook.dat (
     echo.
     echo Swapping file...
-    del Book.dat
+    if exist Book.dat del Book.dat
     rename outBook.dat Book.dat
     echo Complete.
 )
