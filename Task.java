@@ -33,7 +33,7 @@ public class Task implements Comparable<Task>{
         this.description = description;
     }
 
-    /* English-language logic for comparison:
+    /* Objective-perspective logic for comparison:
     If both objects are null-type, then compare titles alphabetically.
     If one object is complete and the other is null, null always loses.
     If both objects are Date types:
@@ -43,10 +43,11 @@ public class Task implements Comparable<Task>{
         If scores match, compare titles alphabetically.
         If scores mismatch, lower scores win.
     If one object is a Date type and the other is a Score type:
-        If the Score type is less than or equal to 0, Score type wins.
+        If the Date type is overdue, Date type wins.
+        If that didn't happen, and the Score type is less than or equal to 0, Score type wins.
         If that didn't happen, and Date type is 48 or fewer hours from now, Date type wins.
         If that didn't happen, and Score type is less than or equal to 5, Score type wins.
-        IF that didn't happen, Date type wins.
+        If that didn't happen, Date type wins.
     */
     public int compareTo(Task other){
         if(type == null){
@@ -68,6 +69,7 @@ public class Task implements Comparable<Task>{
                 return dateCompare;
             }
             //If I'm a Date type and he's a Score type:
+            if(now.until(deadline, ChronoUnit.MINUTES) < 0) return -1;
             if(other.priorityScore<=0) return 1;
             if(now.until(deadline, ChronoUnit.HOURS) <= 48) return -1;
             if(other.priorityScore<=5) return 1;
@@ -75,6 +77,7 @@ public class Task implements Comparable<Task>{
         }
         if(other.type){
             //If I'm a Score type and he's a Date type:
+            if(now.until(other.deadline, ChronoUnit.MINUTES) < 0) return 1;
             if(priorityScore<=0) return -1;
             if(now.until(other.deadline, ChronoUnit.HOURS) <= 48) return 1;
             if(priorityScore<=5) return -1;
@@ -106,6 +109,10 @@ public class Task implements Comparable<Task>{
                 int minute = deadline.getMinute();
                 if(minute < 10) sb.append('0');
                 sb.append(minute);
+                LocalDateTime now = LocalDateTime.now();
+                if(now.until(deadline, ChronoUnit.MINUTES) < 0){
+                    sb.append(" --OVERDUE!--");
+                }
             } else {
                 //Score-Based Case
                 sb.append(priorityScore);
