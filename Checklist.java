@@ -18,6 +18,7 @@ class Checklist{
     }
 
     private static void printTopFive(PriorityQueue<Task> queue){
+        printTitle("Current Top Five Tasks:");
         PriorityQueue<Task> padCount = new PriorityQueue<>(queue);
         int pad = 0;
         for(int i=0; i<5; i++){
@@ -81,20 +82,11 @@ class Checklist{
         return input;
     }
 
-    private static Task createTask(Scanner scan){
-        System.out.print("Title: ");
-        String title = scan.nextLine();
-        System.out.println();
+    private static void initializeTask(Task newTask, Scanner scan){
         System.out.println("0 - NULL / 1 - Date / 2 - Score");
         int mode = menuSelect(2, scan);
+        if(mode == 0) return;
         System.out.println();
-        Task newTask = new Task(title);
-        if(mode == 0){
-            fakeClear();
-            System.out.println('[' + title + "] has been added.");
-            System.out.println();
-            return newTask;
-        }
         if(mode == 1){
             //dateType(int year, int month, int day, int hour, int minute)
             int year = getInt("Year: ", scan);
@@ -107,10 +99,37 @@ class Checklist{
             int score = getInt("Score: ", scan);
             newTask.scoreType(score);
         }
-        fakeClear();
-        System.out.println('[' + title + "] has been added.");
+        return;
+    }
+
+    private static Task selectTask(PriorityQueue<Task> tempQueue, Scanner scan){
+        ArrayList<Task> tempList = new ArrayList<>(tempQueue.size());
+        int pad = 0;
+        while(tempQueue.size()>0){
+            Task t = tempQueue.poll();
+            int len = t.titleLength();
+            if(len > pad) pad = len;
+            tempList.add(t);
+        }
+        int numPad = String.valueOf(tempList.size() - 1).length();
+        for(int i=0; i<tempList.size(); i++){
+            int numLen = String.valueOf(i).length();
+            for(int p=numLen; p<numPad; p++) System.out.print(' ');
+            System.out.println(i + " -> " + tempList.get(i).toPaddedString(pad));
+        }
         System.out.println();
-        return newTask;
+        System.out.println(tempList.size() + " -> Cancel operation.");
+        System.out.println();
+        int selection = menuSelect(tempList.size(), scan);
+        if(selection == tempList.size()) return null;
+        return tempList.get(selection);
+    }
+
+    public static void printTitle(String input){
+        System.out.println("  " + input + "  ");
+        int len = input.length() + 4;
+        for(int i=0; i<len; i++) System.out.print('=');
+        System.out.println();
     }
 
     public static void main(String[] args) throws Exception{
@@ -128,8 +147,6 @@ class Checklist{
         System.out.println("Complete.");
         System.out.println();
 
-        System.out.println("  Current Top Five Tasks:  ");
-        System.out.println("===========================");
         printTopFive(new PriorityQueue<Task>(tasks));
         System.out.println();
 
@@ -152,45 +169,34 @@ class Checklist{
             }
 
             if(selection == 2){
-                Task newTask = createTask(scan);
+                printTitle("Creating New Task");
+                System.out.println();
+                System.out.print("Title: ");
+                String title = scan.nextLine();
+                System.out.println();
+                Task newTask = new Task(title);
+                initializeTask(newTask, scan);
                 tasks.add(newTask);
-                System.out.println("  Current Top Five Tasks:  ");
-                System.out.println("===========================");
+                fakeClear();
+                System.out.println('[' + title + "] has been added.");
+                System.out.println();
                 printTopFive(new PriorityQueue<Task>(tasks));
                 System.out.println();
                 continue;
             }
 
             if(selection == 3){
-                PriorityQueue<Task> tempQueue = new PriorityQueue<Task>(tasks);
-                ArrayList<Task> tempList = new ArrayList<>(tempQueue.size());
-                int pad = 0;
-                while(tempQueue.size()>0){
-                    Task t = tempQueue.poll();
-                    int len = t.titleLength();
-                    if(len > pad) pad = len;
-                    tempList.add(t);
-                }
-                int numPad = String.valueOf(tempList.size() - 1).length();
-                for(int i=0; i<tempList.size(); i++){
-                    int numLen = String.valueOf(i).length();
-                    for(int p=numLen; p<numPad; p++) System.out.print(' ');
-                    System.out.println(i + " -> " + tempList.get(i).toPaddedString(pad));
-                }
+                printTitle("Removing Task");
                 System.out.println();
-                System.out.println(tempList.size() + " -> Cancel removal operation.");
-                System.out.println();
-                int removal = menuSelect(tempList.size(), scan);
+                Task selectedTask = selectTask(new PriorityQueue<Task>(tasks), scan);
                 fakeClear();
-                if(removal == tempList.size()){
+                if(selectedTask == null){
                     System.out.println("Removal operation cancelled.");
                 } else {
-                    tasks.remove(tempList.get(removal));
-                    System.out.println('[' + tempList.get(removal).toString() + "] has been removed.");
+                    tasks.remove(selectedTask);
+                    System.out.println('[' + selectedTask.toString() + "] has been removed.");
                 }
                 System.out.println();
-                System.out.println("  Current Top Five Tasks:  ");
-                System.out.println("===========================");
                 printTopFive(new PriorityQueue<Task>(tasks));
                 System.out.println();
                 continue;
