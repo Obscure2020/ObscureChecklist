@@ -134,6 +134,7 @@ class Checklist{
 
     public static void main(String[] args) throws Exception{
         PriorityQueue<Task> tasks = new PriorityQueue<>();
+        boolean modified = false;
 
         //Read in tasks from Book.dat
         fakeClear();
@@ -182,6 +183,7 @@ class Checklist{
                 System.out.println();
                 printTopFive(new PriorityQueue<Task>(tasks));
                 System.out.println();
+                modified = true;
                 continue;
             }
 
@@ -195,6 +197,7 @@ class Checklist{
                 } else {
                     tasks.remove(selectedTask);
                     System.out.println('[' + selectedTask.toString() + "] has been removed.");
+                    modified = true;
                 }
                 System.out.println();
                 printTopFive(new PriorityQueue<Task>(tasks));
@@ -205,19 +208,24 @@ class Checklist{
         scan.close();
         System.out.println();
 
-        //Save tasks to outBook.dat
-        //I'm writing out to a different file than I read in from just in case some sort of error occurs during the write-out process.
-        //If I write out to outBook without modifying Book, then data isn't completely lost from disk if this process is interrupted.
-        //I let my Launch.bat turn outBook.dat into Book.dat if this process was successful.
-        System.out.println("Saving to file...");
-        File outfile = new File("outBook.dat");
-        PrintWriter pw = new PrintWriter(outfile);
-        while(tasks.size() > 0){
-            Task t = tasks.poll();
-            t.writeToFile(pw);
+        if(modified){ //Only write new file if it's actually necessary.
+            //Save tasks to outBook.dat
+            //I'm writing out to a different file than I read in from just in case some sort of error occurs during the write-out process.
+            //If I write out to outBook without modifying Book, then data isn't completely lost from disk if this process is interrupted.
+            //I let my Launch.bat turn outBook.dat into Book.dat if this process was successful.
+            System.out.println("Saving to file...");
+            File outfile = new File("outBook.dat");
+            PrintWriter pw = new PrintWriter(outfile);
+            while(tasks.size() > 0){
+                Task t = tasks.poll();
+                t.writeToFile(pw);
+            }
+            pw.close();
+            System.out.println("Complete.");
+        } else {
+            System.out.println("No modifications were performed.");
+            System.out.println("Writing skipped.");
         }
-        pw.close();
-        System.out.println("Complete.");
     }
 
 }
