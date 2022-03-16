@@ -93,6 +93,60 @@ class Checklist{
         return input;
     }
 
+    private static int[] getTime(Scanner scan){
+        boolean valid = false;
+        int[] time = new int[2];
+        while(!valid){
+            System.out.print("Time (H:MM $): ");
+            String input = scan.nextLine().trim().toLowerCase();
+            int loc1 = input.indexOf(':');
+            if(loc1 < 0){
+                System.out.println("ERROR FINDING HOUR.");
+                continue;
+            }
+            String hour = input.substring(0,loc1);
+            int loc2 = input.indexOf(' ');
+            if(loc2 < 0){
+                System.out.println("ERROR READING MINUTE.");
+                continue;
+            }
+            String minute = input.substring(loc1+1, loc2);
+            char half = input.charAt(loc2+1);
+            if(half != 'a' && half != 'p'){
+                System.out.println("ERROR READING HALF OF DAY.");
+                continue;
+            }
+            int outHour = 0;
+            try{
+                outHour = Integer.valueOf(hour);
+            } catch(Exception e){
+                System.out.println("ERROR INTERPRETING HOUR.");
+                continue;
+            }
+            int outMinute = 0;
+            try {
+                outMinute = Integer.valueOf(minute);
+            } catch(Exception e){
+                System.out.println("ERROR INTERPRETING MINUTE.");
+                continue;
+            }
+            if(outHour < 1 || outHour > 12){
+                System.out.println("INVALID HOUR VALUE.");
+                continue;
+            }
+            if(outMinute < 0 || outMinute > 59){
+                System.out.println("INVALID MINUTE VALUE.");
+                continue;
+            }
+            outHour %= 12;
+            if(half == 'p') outHour += 12;
+            time[0] = outHour;
+            time[1] = outMinute;
+            valid = true;
+        }
+        return time;
+    }
+
     private static void initializeTask(Task newTask, Scanner scan){
         System.out.println("0 - NULL / 1 - Date / 2 - Score");
         int mode = menuSelect(2, scan);
@@ -103,9 +157,8 @@ class Checklist{
             int year = getInt("Year: ", scan);
             int month = getInt("Month: ", scan);
             int day = getInt("Day: ", scan);
-            int hour = getInt("Hour: ", scan);
-            int minute = getInt("Minute: ", scan);
-            newTask.dateType(year, month, day, hour, minute);
+            int[] time = getTime(scan);
+            newTask.dateType(year, month, day, time[0], time[1]);
         } else {
             int score = getInt("Score: ", scan);
             newTask.scoreType(score);

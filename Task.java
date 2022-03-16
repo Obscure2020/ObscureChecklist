@@ -1,5 +1,6 @@
 import java.io.*;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -10,13 +11,11 @@ public class Task implements Comparable<Task>{
     private Boolean type; //Object used instead of primitive on purpose: True -> Date-based, False -> Priority-Score-based, Null -> Not Fully Constructed
     private LocalDateTime deadline;
     private int priorityScore;
+    private static final DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("M/dd/uuuu h:mm a");
 
     public Task(String title){
         this.title = title;
-        description = null;
         type = null;
-        deadline = null;
-        priorityScore = Integer.MAX_VALUE;
     }
 
     public void dateType(int year, int month, int day, int hour, int minute){
@@ -98,17 +97,7 @@ public class Task implements Comparable<Task>{
         } else {
             if(type){
                 //Date-Based Case
-                sb.append(deadline.getMonthValue());
-                sb.append('/');
-                sb.append(deadline.getDayOfMonth());
-                sb.append('/');
-                sb.append(deadline.getYear());
-                sb.append(' ');
-                sb.append(deadline.getHour());
-                sb.append(':');
-                int minute = deadline.getMinute();
-                if(minute < 10) sb.append('0');
-                sb.append(minute);
+                sb.append(deadline.format(dtFormat));
                 LocalDateTime now = LocalDateTime.now();
                 if(now.until(deadline, ChronoUnit.MINUTES) < 0){
                     sb.append(" --OVERDUE!--");
