@@ -75,7 +75,7 @@ class Checklist{
         for(int i=0; i<200; i++) System.out.println();
     }
 
-    private static int getInt(String prompt, Scanner scan){
+    private static int getInt(String prompt, Scanner scan, int min, int max){
         boolean valid = false;
         int input = 0;
         while(!valid){
@@ -85,6 +85,14 @@ class Checklist{
             } catch(Exception e){
                 System.out.println("INVALID INPUT.");
                 scan.nextLine();
+                continue;
+            }
+            if(input < min){
+                System.out.println("TOO SMALL.");
+                continue;
+            }
+            if(input > max){
+                System.out.println("TOO LARGE.");
                 continue;
             }
             valid = true;
@@ -154,13 +162,13 @@ class Checklist{
         System.out.println();
         if(mode == 1){
             //dateType(int year, int month, int day, int hour, int minute)
-            int year = getInt("Year: ", scan);
-            int month = getInt("Month: ", scan);
-            int day = getInt("Day: ", scan);
+            int year = getInt("Year: ", scan, 0, Integer.MAX_VALUE);
+            int month = getInt("Month: ", scan, 1, 12);
+            int day = getInt("Day: ", scan, 1, DateHandler.monthLength(year, month));
             int[] time = getTime(scan);
             newTask.dateType(year, month, day, time[0], time[1]);
         } else {
-            int score = getInt("Score: ", scan);
+            int score = getInt("Score: ", scan, Integer.MIN_VALUE, Integer.MAX_VALUE);
             newTask.scoreType(score);
         }
         return;
