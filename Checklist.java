@@ -109,7 +109,7 @@ class Checklist{
             String input = scan.nextLine().trim().toLowerCase();
             int loc1 = input.indexOf(':');
             if(loc1 < 0){
-                System.out.println("ERROR FINDING HOUR.");
+                System.out.println("ERROR READING HOUR.");
                 continue;
             }
             String hour = input.substring(0,loc1);
@@ -121,7 +121,7 @@ class Checklist{
             String minute = input.substring(loc1+1, loc2);
             char half = input.charAt(loc2+1);
             if(half != 'a' && half != 'p'){
-                System.out.println("ERROR READING HALF OF DAY.");
+                System.out.println("INVALID HALF OF DAY.");
                 continue;
             }
             int outHour = 0;
@@ -161,10 +161,14 @@ class Checklist{
         if(mode == 0) return;
         System.out.println();
         if(mode == 1){
-            //dateType(int year, int month, int day, int hour, int minute)
-            int year = getInt("Year: ", scan, 0, Integer.MAX_VALUE);
             int month = getInt("Month: ", scan, 1, 12);
-            int day = getInt("Day: ", scan, 1, DateHandler.monthLength(year, month));
+            int day = getInt("Day: ", scan, 1, 31);
+            int year = getInt("Year: ", scan, 0, Integer.MAX_VALUE);
+            int dayLimit = DateHandler.monthLength(year, month);
+            if(day > dayLimit){
+                System.out.println("There is no \"" + DateHandler.englishDay(month, day) + "\" in " + year + ".");
+                day = getInt("Day: ", scan, 1, dayLimit);
+            }
             int[] time = getTime(scan);
             newTask.dateType(year, month, day, time[0], time[1]);
         } else {
