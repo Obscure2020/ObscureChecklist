@@ -1,7 +1,6 @@
 import java.io.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class Task implements Comparable<Task>{
@@ -11,7 +10,7 @@ public class Task implements Comparable<Task>{
     private Boolean type; //Object used instead of primitive on purpose: True -> Date-based, False -> Priority-Score-based, Null -> Not Fully Constructed
     private LocalDateTime deadline;
     private int priorityScore;
-    private static final DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("M/dd/uuuu h:mm a");
+    private static final DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("M/dd/uuuu (EEEE) h:mm a");
 
     public Task(String title){
         this.title = title;
@@ -68,17 +67,17 @@ public class Task implements Comparable<Task>{
                 return dateCompare;
             }
             //If I'm a Date type and he's a Score type:
-            if(now.until(deadline, ChronoUnit.MINUTES) < 0) return -1;
+            if(deadline.isBefore(now)) return -1;
             if(other.priorityScore<=0) return 1;
-            if(now.until(deadline, ChronoUnit.HOURS) <= 48) return -1;
+            if(deadline.isBefore(now.plusDays(2))) return -1;
             if(other.priorityScore<=5) return 1;
             return -1;
         }
         if(other.type){
             //If I'm a Score type and he's a Date type:
-            if(now.until(other.deadline, ChronoUnit.MINUTES) < 0) return 1;
+            if(other.deadline.isBefore(now)) return 1;
             if(priorityScore<=0) return -1;
-            if(now.until(other.deadline, ChronoUnit.HOURS) <= 48) return 1;
+            if(other.deadline.isBefore(now.plusDays(2))) return 1;
             if(priorityScore<=5) return -1;
             return 1;
         }
@@ -99,9 +98,10 @@ public class Task implements Comparable<Task>{
                 //Date-Based Case
                 sb.append(deadline.format(dtFormat));
                 LocalDateTime now = LocalDateTime.now();
-                if(now.until(deadline, ChronoUnit.MINUTES) < 0){
-                    sb.append(" --OVERDUE!--");
-                }
+                if(deadline.isBefore(now)) sb.append(" --OVERDUE!--");
+                int insert = sb.indexOf("(") + 1;
+                String info = DateHandler.weekInfo(deadline);
+                if(info != null) sb.insert(insert, info);
             } else {
                 //Score-Based Case
                 sb.append(priorityScore);
