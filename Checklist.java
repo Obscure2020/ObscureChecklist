@@ -71,8 +71,16 @@ class Checklist{
         return input;
     }
 
-    private static void fakeClear(){
-        for(int i=0; i<200; i++) System.out.println();
+    private static void clearScreen(){
+        //Inspired by StackOverFlow. https://stackoverflow.com/a/38365871
+        try {
+            if (System.getProperty("os.name").contains("Windows"))
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            else
+                new ProcessBuilder("clear").inheritIO().start().waitFor();
+        } catch (Exception e) {
+            for(int i=0; i<200; i++) System.out.println();
+        }
     }
 
     private static int getInt(String prompt, Scanner scan, int min, int max){
@@ -213,7 +221,7 @@ class Checklist{
         boolean modified = false;
 
         //Read in tasks from Book.dat
-        fakeClear();
+        clearScreen();
         System.out.println("Reading from file...");
         Scanner fileScan;
         try{
@@ -243,7 +251,7 @@ class Checklist{
 
             if(selection == 0) break;
 
-            fakeClear();
+            clearScreen();
 
             if(selection == 1){
                 printQueue(new PriorityQueue<Task>(tasks));
@@ -260,7 +268,7 @@ class Checklist{
                 Task newTask = new Task(title);
                 initializeTask(newTask, scan);
                 tasks.add(newTask);
-                fakeClear();
+                clearScreen();
                 System.out.println('[' + title + "] has been added.");
                 System.out.println();
                 printTopFive(new PriorityQueue<Task>(tasks));
@@ -271,13 +279,13 @@ class Checklist{
 
             if(selection == 3){
                 if(tasks.size() == 0){
-                    fakeClear();
+                    clearScreen();
                     System.out.println("You can't remove tasks when there are no tasks to remove, dummy.");
                 } else {
                     printTitle("Removing Task");
                     System.out.println();
                     Task selectedTask = selectTask(new PriorityQueue<Task>(tasks), scan);
-                    fakeClear();
+                    clearScreen();
                     if(selectedTask == null){
                         System.out.println("Removal operation cancelled.");
                     } else {
