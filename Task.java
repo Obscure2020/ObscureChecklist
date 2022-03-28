@@ -99,7 +99,7 @@ public class Task implements Comparable<Task>{
                 sb.append(deadline.format(dtFormat));
                 LocalDateTime now = LocalDateTime.now();
                 if(deadline.isBefore(now)) sb.append(" --OVERDUE!--");
-                int insert = sb.indexOf("(") + 1;
+                int insert = sb.lastIndexOf("(") + 1;
                 String info = DateHandler.weekInfo(deadline);
                 if(info != null) sb.insert(insert, info);
             } else {
