@@ -167,4 +167,8 @@ public class Task implements Comparable<Task>{
         return newTask;
     }
 
+    public String getTitle(){
+        return title;
+    }
+
 }

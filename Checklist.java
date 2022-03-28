@@ -244,8 +244,8 @@ class Checklist{
         //Menu Loop
         Scanner scan = new Scanner(System.in);
         while(true){
-            System.out.println("0 - Exit / 1 - Full List / 2 - New Task / 3 - Remove Task");
-            int selection = menuSelect(3, scan);
+            System.out.println("0 - Exit / 1 - Full List / 2 - New Task / 3 - Remove Task / 4 - Revalue Task");
+            int selection = menuSelect(4, scan);
 
             //I know you're supposed to use a Switch instead of a bunch of If statements, but I just don't like how variable scope works within a Switch.
 
@@ -291,6 +291,40 @@ class Checklist{
                     } else {
                         tasks.remove(selectedTask);
                         System.out.println('[' + selectedTask.toString() + "] has been removed.");
+                        modified = true;
+                    }
+                }
+                System.out.println();
+                printTopFive(new PriorityQueue<Task>(tasks));
+                System.out.println();
+                continue;
+            }
+
+            if(selection == 4){
+                if(tasks.size() == 0){
+                    clearScreen();
+                    System.out.println("There are no tasks to revalue.");
+                } else {
+                    printTitle("Revaluing Task");
+                    System.out.println();
+                    Task selectedTask = selectTask(new PriorityQueue<Task>(tasks), scan);
+                    clearScreen();
+                    if(selectedTask == null){
+                        System.out.println("Revaluing operation cancelled.");
+                    } else {
+                        String title = selectedTask.getTitle();
+                        String oldForm = selectedTask.toString();
+                        tasks.remove(selectedTask);
+                        printTitle("Revaluing Task");
+                        System.out.println();
+                        System.out.println("Title: " + title);
+                        System.out.println();
+                        Task newTask = new Task(title);
+                        initializeTask(newTask, scan);
+                        tasks.add(newTask);
+                        clearScreen();
+                        System.out.println("[" + oldForm + "] has been");
+                        System.out.println("revalued as [" + newTask.toString() + "].");
                         modified = true;
                     }
                 }
