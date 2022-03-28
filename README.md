@@ -24,8 +24,8 @@ Here's the logic behind the comparison sorting of tasks:
 1. If one object is a Date type and the other is a Score type:
     1. If the Date type is overdue, Date type wins.
     1. If that didn't happen, and the Score type is less than or equal to 0, Score type wins.
-    1. If that didn't happen, and Date type is 48 or fewer hours from now, Date type wins.
-    1. If that didn't happen, and Score type is less than or equal to 5, Score type wins.
+    1. If that didn't happen, and Date type is 2 or fewer days from now, Date type wins.
+    1. If that didn't happen, and Score type is less than or equal to 20, Score type wins.
     1. If that didn't happen, Date type wins.
 
 I use a ternary-state boolean trick in Java to store the type, just for fun. You see, the `boolean` primitive in Java can be `true` or `false`, but the `Boolean` *class* in Java can be `true` or `false` or `null`.

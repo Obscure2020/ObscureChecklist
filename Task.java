@@ -43,8 +43,8 @@ public class Task implements Comparable<Task>{
     If one object is a Date type and the other is a Score type:
         If the Date type is overdue, Date type wins.
         If that didn't happen, and the Score type is less than or equal to 0, Score type wins.
-        If that didn't happen, and Date type is 48 or fewer hours from now, Date type wins.
-        If that didn't happen, and Score type is less than or equal to 5, Score type wins.
+        If that didn't happen, and Date type is 2 or fewer days from now, Date type wins.
+        If that didn't happen, and Score type is less than or equal to 20, Score type wins.
         If that didn't happen, Date type wins.
     */
     public int compareTo(Task other){
@@ -70,7 +70,7 @@ public class Task implements Comparable<Task>{
             if(deadline.isBefore(now)) return -1;
             if(other.priorityScore<=0) return 1;
             if(deadline.isBefore(now.plusDays(2))) return -1;
-            if(other.priorityScore<=5) return 1;
+            if(other.priorityScore<=20) return 1;
             return -1;
         }
         if(other.type){
@@ -78,7 +78,7 @@ public class Task implements Comparable<Task>{
             if(other.deadline.isBefore(now)) return 1;
             if(priorityScore<=0) return -1;
             if(other.deadline.isBefore(now.plusDays(2))) return 1;
-            if(priorityScore<=5) return -1;
+            if(priorityScore<=20) return -1;
             return 1;
         }
         //If we're both Score types:
